@@ -50,15 +50,112 @@ class MainClass():
         if selected == 'Rekomendasi':
             self.rekomendasi.menu_rekomendasi()
 
+# class Data(MainClass):
+
+#     def __init__(self):
+#         # Membuat state untuk menampung dataframe
+#         self.state = st.session_state.setdefault('state', {})
+#         if 'dataobat' not in self.state:
+#             self.state['dataobat'] = pd.DataFrame()
+#         if 'datarm' not in self.state:
+#             self.state['datarm'] = pd.DataFrame()
+
+#     def upload_dataobat(self):
+#         try:
+#             uploaded_file1 = st.file_uploader("Upload Data Obat", type=["xlsx"], key="obat")
+#             if uploaded_file1 is not None:
+#                 self.state['dataobat'] = pd.DataFrame()
+#                 fobat = pd.ExcelFile(uploaded_file1)
+
+#                 # Membaca file excel dari banyak sheet
+#                 list_of_dfs_obat = []
+#                 for sheet in fobat.sheet_names:
+#                     # Parse data from each worksheet as a Pandas DataFrame
+#                     dfobat = fobat.parse(sheet, header=0)
+#                     # And append it to the list
+#                     list_of_dfs_obat.append(dfobat)
+
+#                 # Combine all DataFrames into one, 
+#                 dataobat = pd.concat(list_of_dfs_obat, ignore_index=True).drop_duplicates()
+
+#                 self.state['dataobat'] = dataobat
+#                 st.success("Data obat uploaded successfully!")
+
+#         except (TypeError, IndexError, KeyError) as e:
+#             st.error(f"Data yang diupload tidak sesuai: {e}")
+
+#     def display_data_obat(self):
+#         if 'dataobat' in self.state:
+#             if not self.state['dataobat'].empty:
+#                 st.subheader("Data Obat")
+#                 st.write(self.state['dataobat'])
+#             else:
+#                 st.write("No data available")
+#         else:
+#             st.write("No data uploaded yet")
+
+#     def upload_datarm(self):
+#         try:
+#             uploaded_file2 = st.file_uploader("Upload Data Rekam Medis", type=["xlsx"], key="rekammedis")
+#             if uploaded_file2 is not None:
+#                 self.state['datarm'] = pd.DataFrame()
+#                 frekammedis = pd.ExcelFile(uploaded_file2)
+
+#                 # Membaca file excel dari banyak sheet
+#                 list_of_dfs_rekammedis = []
+#                 for sheet in frekammedis.sheet_names:
+#                     # Parse data from each worksheet as a Pandas DataFrame
+#                     dfrekammedis = frekammedis.parse(sheet)
+#                     # And append it to the list
+#                     list_of_dfs_rekammedis.append(dfrekammedis)
+
+#                 # Combine all DataFrames into one
+#                 datarekammedis = pd.concat(list_of_dfs_rekammedis, ignore_index=True).drop_duplicates()
+
+#                 self.state['datarm'] = datarekammedis
+#                 st.success("Data rekam medis uploaded successfully!")
+
+#         except (TypeError, IndexError, KeyError) as e:
+#             st.error(f"Data yang diupload tidak sesuai: {e}")
+
+#     def display_datarm(self):
+#         if 'datarm' in self.state:
+#             if not self.state['datarm'].empty:
+#                 st.subheader("Data Rekam Medis")
+#                 st.write(self.state['datarm'])
+#             else:
+#                 st.write("No data available")
+#         else:
+#             st.write("No data uploaded yet")
+
+#     def tampil_dataobat(self):
+#         if not self.state['dataobat'].empty:
+#             st.dataframe(self.state['dataobat'])
+
+#     def tampil_datarm(self):
+#         if not self.state['datarm'].empty:
+#             st.dataframe(self.state['datarm'])
+
+#     def menu_data(self):
+#         self.judul_halaman('Data', 'Import Dataset')
+#         self.upload_dataobat()
+#         self.tampil_dataobat()
+#         self.upload_datarm()
+#         self.tampil_datarm()
+
 class Data(MainClass):
 
     def __init__(self):
-        # Membuat state untuk menampung dataframe
         self.state = st.session_state.setdefault('state', {})
         if 'dataobat' not in self.state:
             self.state['dataobat'] = pd.DataFrame()
         if 'datarm' not in self.state:
             self.state['datarm'] = pd.DataFrame()
+
+    def check_required_columns(self, df, required_columns):
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
 
     def upload_dataobat(self):
         try:
@@ -67,20 +164,46 @@ class Data(MainClass):
                 self.state['dataobat'] = pd.DataFrame()
                 fobat = pd.ExcelFile(uploaded_file1)
 
-                # Membaca file excel dari banyak sheet
                 list_of_dfs_obat = []
                 for sheet in fobat.sheet_names:
-                    # Parse data from each worksheet as a Pandas DataFrame
                     dfobat = fobat.parse(sheet, header=0)
-                    # And append it to the list
+                    
+                    # Cek apakah kolom yang dibutuhkan ada di dalam data
+                    self.check_required_columns(dfobat, ['STOK AWAL', 'PENERIMAAN', 'PERSEDIAAN', 'PEMAKAIAN', 'STOK AKHIR'])
+                    
                     list_of_dfs_obat.append(dfobat)
 
-                # Combine all DataFrames into one, 
                 dataobat = pd.concat(list_of_dfs_obat, ignore_index=True).drop_duplicates()
-
                 self.state['dataobat'] = dataobat
                 st.success("Data obat uploaded successfully!")
 
+        except ValueError as e:
+            st.error(f"Error in data obat: {e}")
+        except (TypeError, IndexError, KeyError) as e:
+            st.error(f"Data yang diupload tidak sesuai: {e}")
+
+    def upload_datarm(self):
+        try:
+            uploaded_file2 = st.file_uploader("Upload Data Rekam Medis", type=["xlsx"], key="rekammedis")
+            if uploaded_file2 is not None:
+                self.state['datarm'] = pd.DataFrame()
+                frekammedis = pd.ExcelFile(uploaded_file2)
+
+                list_of_dfs_rekammedis = []
+                for sheet in frekammedis.sheet_names:
+                    dfrekammedis = frekammedis.parse(sheet)
+                    
+                    # Cek apakah kolom yang dibutuhkan ada di dalam data
+                    self.check_required_columns(dfrekammedis, ['ID PASIEN', 'TANGGAL KUNJUNGAN', 'DIAGNOSA'])
+                    
+                    list_of_dfs_rekammedis.append(dfrekammedis)
+
+                datarekammedis = pd.concat(list_of_dfs_rekammedis, ignore_index=True).drop_duplicates()
+                self.state['datarm'] = datarekammedis
+                st.success("Data rekam medis uploaded successfully!")
+
+        except ValueError as e:
+            st.error(f"Error in data rekam medis: {e}")
         except (TypeError, IndexError, KeyError) as e:
             st.error(f"Data yang diupload tidak sesuai: {e}")
 
@@ -93,30 +216,6 @@ class Data(MainClass):
                 st.write("No data available")
         else:
             st.write("No data uploaded yet")
-
-    def upload_datarm(self):
-        try:
-            uploaded_file2 = st.file_uploader("Upload Data Rekam Medis", type=["xlsx"], key="rekammedis")
-            if uploaded_file2 is not None:
-                self.state['datarm'] = pd.DataFrame()
-                frekammedis = pd.ExcelFile(uploaded_file2)
-
-                # Membaca file excel dari banyak sheet
-                list_of_dfs_rekammedis = []
-                for sheet in frekammedis.sheet_names:
-                    # Parse data from each worksheet as a Pandas DataFrame
-                    dfrekammedis = frekammedis.parse(sheet)
-                    # And append it to the list
-                    list_of_dfs_rekammedis.append(dfrekammedis)
-
-                # Combine all DataFrames into one
-                datarekammedis = pd.concat(list_of_dfs_rekammedis, ignore_index=True).drop_duplicates()
-
-                self.state['datarm'] = datarekammedis
-                st.success("Data rekam medis uploaded successfully!")
-
-        except (TypeError, IndexError, KeyError) as e:
-            st.error(f"Data yang diupload tidak sesuai: {e}")
 
     def display_datarm(self):
         if 'datarm' in self.state:
@@ -142,6 +241,7 @@ class Data(MainClass):
         self.tampil_dataobat()
         self.upload_datarm()
         self.tampil_datarm()
+
 
 class Preprocessing(Data):
 

@@ -6,3 +6,4 @@ pip
 matplotlib
 streamlit-option-menu
 num2words
+openpyxl

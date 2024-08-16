@@ -194,7 +194,7 @@ class Data(MainClass):
                     dfrekammedis = frekammedis.parse(sheet)
                     
                     # Cek apakah kolom yang dibutuhkan ada di dalam data
-                    self.check_required_columns(dfrekammedis, ['ID PASIEN', 'TANGGAL KUNJUNGAN', 'DIAGNOSA'])
+                    self.check_required_columns(dfrekammedis, ['Nama Pasien', 'NIK', 'Diagnosa'])
                     
                     list_of_dfs_rekammedis.append(dfrekammedis)
 

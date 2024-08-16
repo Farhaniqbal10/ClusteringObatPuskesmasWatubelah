@@ -5,3 +5,4 @@ scikit-learn
 pip
 matplotlib
 streamlit-option-menu
+num2words

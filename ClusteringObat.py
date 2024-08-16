@@ -420,8 +420,8 @@ class Rekomendasi(Data):
                 # Menampilkan data sesuai urutan: PENERIMAAN, PEMAKAIAN, STOK AKHIR, REKOMENDASI
                 result_data = cluster_data_reversed[['STOK AWAL','PENERIMAAN', 'PEMAKAIAN', 'STOK AKHIR', 'Rekomendasi Permintaan']]
                 
-                st.success(f"Rekomendasi permintaan obat untuk bulan Juni pada Cluster {selected_cluster} telah dihitung dan data telah dibalik ke bentuk asli.")
-                st.write(f"### Data Obat pada Cluster {selected_cluster}")
+                st.success(f"Rekomendasi permintaan obat untuk bulan Juni pada Cluster {selected_cluster + 1} telah dihitung dan data telah dibalik ke bentuk asli.")
+                st.write(f"### Data Obat pada Cluster {selected_cluster + 1}")
                 st.dataframe(result_data)
             else:
                 st.warning("Belum ada cluster yang terbentuk.")

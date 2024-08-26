@@ -513,7 +513,7 @@ class Rekomendasi(Data):
 
                 # Menghitung rekomendasi permintaan untuk bulan depan
                 cluster_data_reversed['Rekomendasi Permintaan'] = cluster_data_reversed.apply(
-                    lambda row: np.ceil(row['PENERIMAAN'] * 1.10) if row['PENERIMAAN'] > 0 else ('1 BOX'),
+                    lambda row: np.ceil(row['PENERIMAAN'] * 0.1) if row['PENERIMAAN'] > 0 else ('1 BOX'),
                     axis=1
                 )
                 
